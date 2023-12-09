@@ -399,7 +399,7 @@ class FPV:
 				cv2.putText(rgb, modeText,(40,100), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 				encoded, buffer = cv2.imencode('.jpg', rgb)
 			jpg_as_text = base64.b64encode(buffer)
-			footage_socket.send(jpg_as_text)
+			#footage_socket.send(jpg_as_text)
 
 			rawCapture.truncate(0)
 
