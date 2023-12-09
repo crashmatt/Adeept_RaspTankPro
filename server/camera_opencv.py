@@ -423,9 +423,15 @@ class Camera(BaseCamera):
         
         camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-        camera.set(cv2.CAP_PROP_AUTO_WB, 1)
-        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
-        camera.set(cv2.CAP_PROP_CONVERT_RGB, 1)
+#        camera.set(cv2.CAP_PROP_GAIN, 10)
+        camera.set(cv2.CAP_PROP_FPS, 10)
+        camera.set(cv2.CAP_PROP_EXPOSURE, 3000)
+        camera.set(cv2.CAP_PROP_GAIN, 10)
+        
+        
+#        camera.set(cv2.CAP_PROP_AUTO_WB, 1)
+#        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+#        camera.set(cv2.CAP_PROP_CONVERT_RGB, 1)
         
         cvt = CVThread()
         cvt.start()
@@ -436,8 +442,10 @@ class Camera(BaseCamera):
             #convert yuv image to rgb
             #img = cv2.cvtColor(img, cv2.COLOR_YUV2RGB_I420)
             
+            img = cv2.cvtColor(img, cv2.COLOR_YUV2BGR_I420)
+
             #convert rgb image to bgr
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
             if Camera.modeSelect == 'none':
                 switch.switch(1,0)
