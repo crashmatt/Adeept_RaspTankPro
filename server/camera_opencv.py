@@ -442,7 +442,7 @@ class Camera(BaseCamera):
             #convert yuv image to rgb
             #img = cv2.cvtColor(img, cv2.COLOR_YUV2RGB_I420)
             
-            img = cv2.cvtColor(img, cv2.COLOR_YUV2BGR_I420)
+            img = cv2.cvtColor(img, cv2.COLOR_YUV2BGR)
 
             #convert rgb image to bgr
             #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
