@@ -421,10 +421,11 @@ class Camera(BaseCamera):
         if not camera.isOpened():
             raise RuntimeError('Could not start camera.')
         
-        camera.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 1280)
-        camera.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 720)
-        camera.set(cv2.cv.CV_CAP_PROP_FPS, 10)
-
+        camera.set(cv2.cv.CAP_PROP_FRAME_WIDTH, 1280)
+        camera.set(cv2.cv.CAP_PROP_FRAME_HEIGHT, 720)
+        camera.set(cv2.cv.CAP_PROP_AUTO_WB, 1)
+        camera.set(cv2.cv.CAP_PROP_AUTO_EXPOSURE, 0)
+        
         cvt = CVThread()
         cvt.start()
 
