@@ -427,6 +427,11 @@ class Camera(BaseCamera):
         while True:
             # read current frame
             _, img = camera.read()
+            #convert yuv image to rgb
+            #img = cv2.cvtColor(img, cv2.COLOR_YUV2RGB_I420)
+            
+            #convert rgb image to bgr
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
             if Camera.modeSelect == 'none':
                 switch.switch(1,0)
@@ -441,8 +446,6 @@ class Camera(BaseCamera):
                     img = cvt.elementDraw(img)
                 except:
                     pass
-            
-
 
             # encode as a jpeg image and return it
             if cv2.imencode('.jpg', img)[0]:
