@@ -395,6 +395,7 @@ class FPV:
 			if FindLineMode and not frameRender:#2
 				encoded, buffer = cv2.imencode('.jpg', frame_findline)
 			else:
+		       	frame_image = cv2.cvtColor(frame_image, cv2.COLOR_BGR2RGB)
 				cv2.putText(frame_image, modeText,(40,100), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 				encoded, buffer = cv2.imencode('.jpg', frame_image)
 			jpg_as_text = base64.b64encode(buffer)
