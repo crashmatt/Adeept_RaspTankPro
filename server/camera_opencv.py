@@ -103,10 +103,10 @@ class CVThread(threading.Thread):
 
         elif self.CVMode == 'findColor':
             if self.findColorDetection:
-                cv2.putText(imgInput,'Target Detected',(40,60), CVThread.font, 0.5,(255,255,255),1,cv2.LINE_AA)
+                cv2.putText(imgInput,'Target Detected',(40,60), CVThread.font, 2.0,(64,64,255),1,cv2.LINE_AA)
                 self.drawing = 1
             else:
-                cv2.putText(imgInput,'Target Detecting',(40,60), CVThread.font, 0.5,(255,255,255),1,cv2.LINE_AA)
+                cv2.putText(imgInput,'Target Detecting',(40,60), CVThread.font, 2.0,(64,64,255),1,cv2.LINE_AA)
                 self.drawing = 0
 
             if self.radius > 10 and self.drawing:
