@@ -169,10 +169,11 @@ def cvFindLine():#2
 # 	camera.exposure_mode = 'on'
 
 class FPV: 
-	def __init__(self):
+	def __init__(self, cam_pixel_format='bgr'):
 		self.frame_num = 0
 		self.fps = 0
-
+		self.cam_pixel_format = cam_pixel_format
+  
 	def SetIP(self,invar):
 		self.IP = invar
 
@@ -256,8 +257,13 @@ class FPV:
 		#time.sleep(4)
 		lastMovtionCaptured = datetime.datetime.now()
 
-		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+		for frame in camera.capture_continuous(rawCapture, format=self.cam_pixel_format, use_video_port=True):
+      
 			frame_image = frame.array
+			if self.cam_pixel_format == 'yuv':
+				#convert frame_image from yuv to bgr
+				frame_image = cv2.cvtColor(frame_image, cv2.COLOR_YUV2BGR)
+   
 			cv2.line(frame_image,(300,240),(340,240),(128,255,128),1)
 			cv2.line(frame_image,(320,220),(320,260),(128,255,128),1)
 			timestamp = datetime.datetime.now()

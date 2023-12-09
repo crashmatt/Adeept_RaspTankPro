@@ -171,7 +171,7 @@ def info_send_client():
 
 def FPV_thread():
     global fpv
-    fpv=FPV.FPV()
+    fpv=FPV.FPV(cam_pixel_format="yuv")
     fpv.capture_thread(addr[0])
 
 
