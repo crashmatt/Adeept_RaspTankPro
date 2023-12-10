@@ -24,34 +24,20 @@ except:
     MPU_connection = 0
     print('mpu6050 disconnected, ARM MODE ON')
 
-curpath = os.path.realpath(__file__)
-thisPath = "/" + os.path.dirname(curpath)
-
-def num_import_int(initial):        #Call this function to import data from '.txt' file
-    global r
-    with open(thisPath+"/RPIservo.py") as f:
-        for line in f.readlines():
-            if(line.find(initial) == 0):
-                r=line
-    begin=len(list(initial))
-    snum=r[begin:]
-    n=int(snum)
-    return n
-
 pwm0_direction = 1
-pwm0_init = num_import_int('init_pwm0 = ')
+pwm0_init = 300
 pwm0_max  = 520
 pwm0_min  = 100
 pwm0_pos  = pwm0_init
 
 pwm1_direction = 1
-pwm1_init = num_import_int('init_pwm1 = ')
+pwm1_init = 300
 pwm1_max  = 520
 pwm1_min  = 100
 pwm1_pos  = pwm1_init
 
 pwm2_direction = 1
-pwm2_init = num_import_int('init_pwm2 = ')
+pwm2_init = 300
 pwm2_max  = 520
 pwm2_min  = 100
 pwm2_pos  = pwm2_init
