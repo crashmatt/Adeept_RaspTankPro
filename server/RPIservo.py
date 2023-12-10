@@ -17,46 +17,74 @@ change this form 1 to -1 to reverse servos
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
 
-init_pwm0 = 300
-init_pwm1 = 300
-init_pwm2 = 300
-init_pwm3 = 300
+class Servo():
+    def __init__(self, servo_config : dict):
+        self,config = servo_config
+        
+        if "index" not in config:
+            raise Exception("index not found in servo_config")
+        
+        self.index = config["index"]
+        self.name = "servo_" + str(self.index)
+        
+        self.sc_direction = 1
+        self.init_pos = 300
+        self.goal_pos = 300
+        self.now_pos = 300
+        self.buffer_pos = 300
+        self.last_pos = 300
+        self.ing_goal = 300
+        self.max_pos = 560
+        self.min_pos = 100
+        self.sc_speed = 0
+        self.ctrl_range_max = 560
+        self.ctrl_range_min = 100
+        self.angle_range = 180
+        
+        for item in config:
+            setattr(self, item, config[item])
+            
+        
+    def moveInit(self):
+        index = self.index
+        initPos = self.init_pos
+        pwm.set_pwm(index,0,initPos)
+        self.lastPos = initPos
+        self.nowPos = initPos
+        self.bufferPos = float(initPos)
+        self.goalPos = initPos
 
-init_pwm4 = 300
-init_pwm5 = 300
-init_pwm6 = 300
-init_pwm7 = 300
+class Servos():
+    def __init__(self, servo_configs : list):
+		#dict of servo name to servo object
+        self.servos = {}
+        for servo_config in servo_configs:
+            servo = Servo(servo_config)
+            name = servo.name
+            self.servos[name] = servo
+            
+        self.servo_ctrl = ServoCtrl()
+        
+        #dict of servo index to servo object
+        self.servo_idx = {}
+        for servo_name in self.servos:
+            servo = self.servos[servo_name]
+            self.servo_idx[servo.index] = servo
 
-init_pwm8 = 300
-init_pwm9 = 300
-init_pwm10 = 300
-init_pwm11 = 300
-
-init_pwm12 = 300
-init_pwm13 = 300
-init_pwm14 = 300
-init_pwm15 = 300
+        self.servo_ctrl.moveInit()
+            
+    def servoPosInit(self):
+        for servo in self.servos.values():
+            servo.moveServoInit()
+            
+    def setServoSpeed(self, name, direction, speed):
+        self.servos[name].sc_direction = direction
+        self.servos[name].sc_speed = speed
 
 class ServoCtrl(threading.Thread):
 
-	def __init__(self, *args, **kwargs):
-		self.sc_direction = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1]
-		self.initPos = [init_pwm0,init_pwm1,init_pwm2,init_pwm3,
-						init_pwm4,init_pwm5,init_pwm6,init_pwm7,
-						init_pwm8,init_pwm9,init_pwm10,init_pwm11,
-						init_pwm12,init_pwm13,init_pwm14,init_pwm15]
-		self.goalPos = [300,300,300,300, 300,300,300,300 ,300,300,300,300 ,300,300,300,300]
-		self.nowPos  = [300,300,300,300, 300,300,300,300 ,300,300,300,300 ,300,300,300,300]
-		self.bufferPos  = [300.0,300.0,300.0,300.0, 300.0,300.0,300.0,300.0 ,300.0,300.0,300.0,300.0 ,300.0,300.0,300.0,300.0]
-		self.lastPos = [300,300,300,300, 300,300,300,300 ,300,300,300,300 ,300,300,300,300]
-		self.ingGoal = [300,300,300,300, 300,300,300,300 ,300,300,300,300 ,300,300,300,300]
-		self.maxPos  = [560,560,560,560, 560,560,560,560 ,560,560,560,560 ,560,560,560,560]
-		self.minPos  = [100,100,100,100, 100,100,100,100 ,100,100,100,100 ,100,100,100,100]
-		self.scSpeed = [0,0,0,0, 0,0,0,0 ,0,0,0,0 ,0,0,0,0]
-
-		self.ctrlRangeMax = 560
-		self.ctrlRangeMin = 100
-		self.angleRange = 180
+	def __init__(self, servos, *args, **kwargs):
+		self.servos = servos
 
 		'''
 		scMode: 'init' 'auto' 'certain' 'quick' 'wiggle'
@@ -89,58 +117,45 @@ class ServoCtrl(threading.Thread):
 
 	def moveInit(self):
 		self.scMode = 'init'
-		for i in range(0,16):
-			pwm.set_pwm(i,0,self.initPos[i])
-			self.lastPos[i] = self.initPos[i]
-			self.nowPos[i] = self.initPos[i]
-			self.bufferPos[i] = float(self.initPos[i])
-			self.goalPos[i] = self.initPos[i]
+		for servo in self.servos.values():
+			servo.moveInit()
 		self.pause()
-
-
-	def initConfig(self, ID, initInput, moveTo):
-		if initInput > self.minPos[ID] and initInput < self.maxPos[ID]:
-			self.initPos[ID] = initInput
-			if moveTo:
-				pwm.set_pwm(ID,0,self.initPos[ID])
-		else:
-			print('initPos Value Error.')
-
 
 	def moveServoInit(self, ID):
 		self.scMode = 'init'
-		for i in range(0,len(ID)):
-			pwm.set_pwm(ID[i], 0, self.initPos[ID[i]])
-			self.lastPos[ID[i]] = self.initPos[ID[i]]
-			self.nowPos[ID[i]] = self.initPos[ID[i]]
-			self.bufferPos[ID[i]] = float(self.initPos[ID[i]])
-			self.goalPos[ID[i]] = self.initPos[ID[i]]
+		for servo in self.servos.values():
+			servo.moveInit()
 		self.pause()
 
 
 	def posUpdate(self):
 		self.goalUpdate = 1
-		for i in range(0,16):
-			self.lastPos[i] = self.nowPos[i]
+		for servo in self.servos.values():
+			servo.lastPos = servo.nowPos
 		self.goalUpdate = 0
 
 
 	def speedUpdate(self, IDinput, speedInput):
-		for i in range(0,len(IDinput)):
-			self.scSpeed[IDinput[i]] = speedInput[i]
+		for servo in self.servos.values():
+			servo.sc_speed = speedInput[servo.index]
 
+	def check_ingGoal(self):
+		for servo in self.servos.values():
+			if servo.ingGoal != servo.goalPos:
+				return False
+		return True
 
 	def moveAuto(self):
-		for i in range(0,16):
-			self.ingGoal[i] = self.goalPos[i]
+		for servo in self.servos.values():
+			servo.ing_goal = servo.goal_pos
 
 		for i in range(0, self.scSteps):
-			for dc in range(0,16):
+			for servo in self.servos.values():
 				if not self.goalUpdate:
-					self.nowPos[dc] = int(round((self.lastPos[dc] + (((self.goalPos[dc] - self.lastPos[dc])/self.scSteps)*(i+1))),0))
-					pwm.set_pwm(dc, 0, self.nowPos[dc])
+					servo.now_pos = int(round((servo.last_pos + (((servo.goal_pos - servo.last_pos)/self.scSteps)*(i+1))),0))
+					pwm.set_pwm(servo.index, 0, servo.now_pos)
 
-				if self.ingGoal != self.goalPos:
+				if not self.check_ingGoal():
 					self.posUpdate()
 					time.sleep(self.scTime/self.scSteps)
 					return 1
@@ -157,22 +172,22 @@ class ServoCtrl(threading.Thread):
 			self.bufferPos[i] = self.lastPos[i]
 
 		while self.nowPos != self.goalPos:
-			for i in range(0,16):
-				if self.lastPos[i] < self.goalPos[i]:
-					self.bufferPos[i] += self.pwmGenOut(self.scSpeed[i])/(1/self.scDelay)
+			for servo in self.servos.values():
+				if servo.last_pos < servo.goal_pos:
+					servo.buffer_pos += self.pwmGenOut(servo.sc_speed)/(1/servo.sc_delay)
+					newNow = int(round(servo.buffer_pos, 0))
+					if newNow > servo.goal_pos:newNow = servo.goal_pos
+					servo.now_pos = newNow
+				elif servo.last_pos > servo.goal_pos:
+					self.buffer_pos -= self.pwmGenOut(servo.sc_speed[i])/(1/servo.sc_delay)
 					newNow = int(round(self.bufferPos[i], 0))
-					if newNow > self.goalPos[i]:newNow = self.goalPos[i]
-					self.nowPos[i] = newNow
-				elif self.lastPos[i] > self.goalPos[i]:
-					self.bufferPos[i] -= self.pwmGenOut(self.scSpeed[i])/(1/self.scDelay)
-					newNow = int(round(self.bufferPos[i], 0))
-					if newNow < self.goalPos[i]:newNow = self.goalPos[i]
-					self.nowPos[i] = newNow
+					if newNow < servo.goal_pos:newNow = servo.goal_pos
+					servo.now_pos = newNow
 
 				if not self.goalUpdate:
-					pwm.set_pwm(i, 0, self.nowPos[i])
+					pwm.set_pwm(servo.index, 0, servo.now_pos)
 
-				if self.ingGoal != self.goalPos:
+				if not self.check_ingGoal():
 					self.posUpdate()
 					return 1
 			self.posUpdate()
@@ -240,9 +255,13 @@ class ServoCtrl(threading.Thread):
 
 
 	def singleServo(self, ID, direcInput, speedSet):
+		if ID not in self.servos:
+			raise Exception("servo ID:%s not found" % ID)
 		self.wiggleID = ID
 		self.wiggleDirection = direcInput
-		self.scSpeed[ID] = speedSet
+ 
+		servo = self.servos[ID]
+		servo.sc_speed = speedSet
 		self.scMode = 'wiggle'
 		self.posUpdate()
 		self.resume()

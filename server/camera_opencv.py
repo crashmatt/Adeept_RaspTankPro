@@ -352,8 +352,7 @@ class Camera(BaseCamera):
     # modeSelect = 'findlineCV'
     # modeSelect = 'findColor'
     # modeSelect = 'watchDog'
-
-
+    
     def __init__(self):
         if os.environ.get('OPENCV_CAMERA_SOURCE'):
             Camera.set_video_source(int(os.environ['OPENCV_CAMERA_SOURCE']))
@@ -414,38 +413,46 @@ class Camera(BaseCamera):
     @staticmethod
     def set_video_source(source):
         Camera.video_source = source
-
+        
     @staticmethod
     def frames():
+        settings_dict = {
+            "height" : cv2.CAP_PROP_FRAME_HEIGHT,
+            "width" : cv2.CAP_PROP_FRAME_WIDTH,
+            "fps" : cv2.CAP_PROP_FPS,
+            "brightness" : cv2.CAP_PROP_BRIGHTNESS,
+            "exposure" : cv2.CAP_PROP_EXPOSURE,
+            "contrast" : cv2.CAP_PROP_CONTRAST,
+            "gain" : cv2.CAP_PROP_GAIN,
+            "auto_exposure" : cv2.CAP_PROP_AUTO_EXPOSURE,
+            "auto_wb" : cv2.CAP_PROP_AUTO_WB,
+            "convert_rgb" : cv2.CAP_PROP_CONVERT_RGB            
+        }
+        
         camera = cv2.VideoCapture(Camera.video_source)
         if not camera.isOpened():
             raise RuntimeError('Could not start camera.')
         
-        camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-#        camera.set(cv2.CAP_PROP_GAIN, 10)
-        camera.set(cv2.CAP_PROP_FPS, 10)
-        camera.set(cv2.CAP_PROP_EXPOSURE, 3000)
-        camera.set(cv2.CAP_PROP_GAIN, 10)
+        # if "resolution" in Camera.config:
+        #     width = Camera.config["resolution"][0]
+        #     height = Camera.config["resolution"][1]
+        #     camera.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        #     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        #     print("Camera resolution set to %dx%d"%(width, height))
         
-        
-#        camera.set(cv2.CAP_PROP_AUTO_WB, 1)
-#        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
-#        camera.set(cv2.CAP_PROP_CONVERT_RGB, 1)
-        
+        for key in Camera.config:
+            if key in settings_dict:
+                camera.set(settings_dict[key], Camera.config[key])
+                print("Camera %s set to %d"%(key, Camera.config[key]))
+            else:
+                print("Camera setting %s not supported" % key)
+                    
         cvt = CVThread()
         cvt.start()
 
         while True:
             # read current frame
             _, img = camera.read()
-            #convert yuv image to rgb
-            #img = cv2.cvtColor(img, cv2.COLOR_YUV2RGB_I420)
-            
-            #img = cv2.cvtColor(img, cv2.COLOR_YUV2BGR)
-
-            #convert rgb image to bgr
-            #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
             if Camera.modeSelect == 'none':
                 switch.switch(1,0)

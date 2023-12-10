@@ -1,1 +1,13 @@
-{"production": true}
+{	"production": true,
+ 	"devices" : {
+ 		"servos" : [
+ 			{ "name":"Pan", "index":0 },
+ 			{ "name":"Arm", "index":1 },
+ 			{ "name":"Hand", "index":2, "min_pos":200 },
+ 			{ "name":"Gripper", "index":3 }
+ 			{ "name":"Camera", "index":4 }
+ 		]
+ 			
+ 	}.
+ 	"camera" : {"width":640, "height":480, "fps":10}
+}
