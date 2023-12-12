@@ -25,34 +25,7 @@ import websockets
 import json
 import app
 
-
-
-class Screen():
-    def __init__(self):
-        try:
-            import OLED
-            self.screen = OLED.OLED_ctrl()
-            self.screen.start()
-            self.show(1, 'ADEEPT.COM')
-        except:
-            self.screen = None
-            print('OLED disconnected')
-            pass
-        
-    def show(self, line, text):
-        if self.screen:
-            self.screen.screen_show(line, text)
-
-class Devices(dict):
-    def __init__(self, device_config):
-        super().__init__()
-            
-        self["screen"] = Screen()
-        
-        if "servos" not in device_config:
-            raise Exception("[servos] not found in device_config")
-
-        self["servos"] = RPIservo.Servos(device_config["servos"])
+from devices import Devices, Screen
 
 
 functionMode = 0
@@ -86,14 +59,7 @@ if "devices" not in config:
 
 devices = Devices(config["devices"])
 
-# init_pwm0 = scGear.initPos[0]
-# init_pwm1 = scGear.initPos[1]
-# init_pwm2 = scGear.initPos[2]
-# init_pwm3 = scGear.initPos[3]
-# init_pwm4 = scGear.initPos[4]
-
-
-fuc = functions.Functions()
+fuc = functions.Functions(devices)
 fuc.start()
 
 curpath = os.path.realpath(__file__)

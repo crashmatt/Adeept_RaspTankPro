@@ -83,7 +83,7 @@ class Servos():
 
 class ServoCtrl(threading.Thread):
 
-	def __init__(self, servos, *args, **kwargs):
+	def __init__(self, servos : Servos, *args, **kwargs):
 		self.servos = servos
 
 		'''

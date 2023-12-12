@@ -1,59 +1,19 @@
 import time
 import RPi.GPIO as GPIO
 import threading
-from mpu6050 import mpu6050
-import Adafruit_PCA9685
 import os
 import json
 import ultra
 import Kalman_filter
 import move
-
-move.setup()
+from devices import Devices
 
 kalman_filter_X =  Kalman_filter.Kalman_filter(0.01,0.1)
 
-pwm = Adafruit_PCA9685.PCA9685()
-pwm.set_pwm_freq(50)
-
-MPU_connection = 1
-try:
-    sensor = mpu6050(0x68)
-    print('mpu6050 connected, PT MODE ON')
-except:
-    MPU_connection = 0
-    print('mpu6050 disconnected, ARM MODE ON')
-
-pwm0_direction = 1
-pwm0_init = 300
-pwm0_max  = 520
-pwm0_min  = 100
-pwm0_pos  = pwm0_init
-
-pwm1_direction = 1
-pwm1_init = 300
-pwm1_max  = 520
-pwm1_min  = 100
-pwm1_pos  = pwm1_init
-
-pwm2_direction = 1
-pwm2_init = 300
-pwm2_max  = 520
-pwm2_min  = 100
-pwm2_pos  = pwm2_init
 
 line_pin_right = 19
 line_pin_middle = 16
 line_pin_left = 20
-
-Dir_forward   = 0
-Dir_backward  = 1
-
-left_forward  = 1
-left_backward = 0
-
-right_forward = 0
-right_backward= 1
 
 mark = 0
 
@@ -70,7 +30,9 @@ def setup():
 
 
 class Functions(threading.Thread):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, devices, *args, **kwargs):
+		self.devices = devices
+  
 		self.functionMode = 'none'
 		self.steadyGoal = 0
 

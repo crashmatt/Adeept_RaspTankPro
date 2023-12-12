@@ -13,8 +13,7 @@ import threading
 import imutils
 import robotLight
 
-light = robotLight.RobotLight()
-
+    
 pid = PID.PID()
 pid.SetKp(0.5)
 pid.SetKd(0)
@@ -48,11 +47,6 @@ class CVThread(threading.Thread):
     Y_lock = 0
     X_lock = 0
     tor = 17
-
-    scGear = RPIservo.ServoCtrl()
-    scGear.moveInit()
-    move.setup()
-    switch.switchSetup()
 
     def __init__(self, *args, **kwargs):
         self.CVThreading = 0
