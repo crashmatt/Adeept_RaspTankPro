@@ -1,0 +1,41 @@
+#standard .gitignore for python
+*.py[cod]
+*$py.class
+
+#ignore .env file
+.env
+
+#ignore .idea folder
+.idea
+
+#ignore .vscode folder
+.vscode
+
+#ignore .pytest_cache folder
+.pytest_cache
+
+#ignore .mypy_cache folder
+.mypy_cache
+
+#ignore .venv folder
+.venv
+
+#ignore .ipynb_checkpoints folder
+.ipynb_checkpoints
+
+#ignore .jupyter folder
+.jupyter
+
+#ignore .pytest_cache folder
+.pytest_cache
+
+#ignore .pytest_cache folder
+.pytest_cache
+
+#ignore __pycache__ folder
+__pycache__
+
+#ignore .mypy_cache folder
+.mypy_cache
+
+#ignore .pytest_cache fold
